@@ -68,10 +68,15 @@ int main (int argc, char ** argv) {
 	findDimensions(root);
 	printPostorder(fp3, root);
 
+	FILE * fp4 = fopen(argv[4], "w");
+	findCoords(root);
+	printCoords(fp4, root);
+
 	destroyTree(root);
 	free(arrayofNodes);
 	fclose(fp);
 	fclose(fp2);
 	fclose(fp3);
+	fclose(fp4);
 	return EXIT_SUCCESS;
 }

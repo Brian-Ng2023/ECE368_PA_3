@@ -8,6 +8,8 @@ TreeNode * newNode() {
 	Node->width = 0;
 	Node->height = 0;
 	Node->cut = 0;
+	Node->xcord = 0;
+	Node->ycord = 0;
 	Node->left = NULL;
 	Node->right = NULL;
 	return Node;
@@ -156,6 +158,91 @@ void findDimensions(TreeNode * Node) {
 	return;
 }
 
+void findCoords(TreeNode * Node) {
+	//To find the coordinates of each leaf node, they need to be in
+	//reference to the cut lines.
+	//
+	//One thing to consider is determining which leaf node will
+	//start with the coordinate (0,0). Given 0,0 references the bottom left
+	//corner, one can observe that the block with that coordinate is
+	//in the right subtree of an H cut and a left subtree of a V cut.
+	//This means one can actually traverse nodes based on cuts to reach the
+	//0,0 coordinate and the build the rest of the coordinates off this
+	//reference point.
+	//
+	//All blocks are organized respective to the cutlines as such:
+	//H cuts:
+	//    Left node is above
+	//    Right node is below
+	//V cuts:
+	//    Left Node is left
+	//    Right Node is right
+	//
+	//A pattern to notice can be the coordinates of a block are
+	//the width of the left V node plus the height of right H node
+	//starting from the base 0,0 coordinates.
+	//
+	//However, there is another pattern to realize in a more recursive
+	//manner:
+	//Given the width and height of a cut node
+	//    X coordinate of the right child of a V node is the 
+	//    width of the left child
+	//    
+	//    X coordinate of the left child of a V node is zero at base
+	//
+	//    Y coordinates are the same for both children of a V node
+	//
+	//    X coordinates are the same for both children of an H node
+	//
+	//    Y coordinate of the left child of an H node is the height
+	//    of the right child
+	//
+	//    Y coordinate of the right child of an H node is zero at base
+	//
+	//Implementing this recursive pattern implies every coordinate is 
+	//built based on the child coordinates
+	if (Node != NULL) {	
+		
+		if(Node->cut == 72) {
+			Node->left->ycord += Node->right->height;
+			if(Node->ycord != 0) {//Update starting coords if nonzero
+				Node->left->ycord += Node->ycord;
+				Node->right->ycord += Node->ycord;
+			}
+			else if(Node->xcord != 0) {
+				Node->right->xcord += Node->xcord;
+				Node->left->xcord += Node->xcord;
+			}
+		}
+		else if (Node->cut == 86) {
+			Node->right->xcord += Node->left->width;
+			if(Node->xcord != 0) {
+				Node->right->xcord += Node->xcord;
+				Node->left->xcord += Node->xcord;
+			}
+			else if(Node->ycord != 0) {
+				Node->left->ycord += Node->ycord;
+				Node->right->ycord += Node->ycord;
+			}
+		}
+		
+		findCoords(Node->left);
+		findCoords(Node->right);
+		
+	}
+}
+
+void printCoords(FILE * fp4, TreeNode * Node) {
+	if (Node != NULL) {
+		printCoords(fp4, Node->left);
+		printCoords(fp4, Node->right);
+
+		if(Node->cut == 0) {
+			fprintf(fp4, "%d((%d,%d)(%d,%d))\n", Node->number, Node->width, Node->height, Node->xcord, Node->ycord);
+		}
+	}
+}
+
 void readLine(FILE * fp, TreeNode * Node) {
 	int ch = 0;
 	ch = fgetc(fp);
@@ -165,7 +252,8 @@ void readLine(FILE * fp, TreeNode * Node) {
 		Node->number = 0;
 		Node->width = 0;
 		Node->height = 0;
-
+		Node->xcord = 0;
+		Node->ycord = 0;
 		Node->left = NULL;
 		Node->right = NULL;
 	
@@ -177,6 +265,8 @@ void readLine(FILE * fp, TreeNode * Node) {
 	else {
 		fseek(fp, -1, SEEK_CUR);
 		Node->cut = 0;
+		Node->xcord = 0;
+		Node->ycord = 0;
 		Node->left = NULL;
 		Node->right = NULL;
 		
