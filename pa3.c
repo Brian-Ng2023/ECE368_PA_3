@@ -9,6 +9,10 @@ int main (int argc, char ** argv) {
 	}
 
 	FILE *fp = fopen(argv[1], "r");
+	if(fp == NULL) {
+		fprintf(stderr, "Invalid argument argv[1].\n");
+		return EXIT_FAILURE;
+	}
 	//The input file will contain a strictly binary tree in postorder
 	//containing the block and the cutline nodes describing the packing.
 	//The first output will be the preorder of the given postorder binary
@@ -60,15 +64,28 @@ int main (int argc, char ** argv) {
 
 	root = buildTree(arrayofNodes, count);
 	
-	FILE * fp2 = fopen(argv[2], "w");	
+	FILE * fp2 = fopen(argv[2], "w");
+	if(fp2 == NULL) {
+		fprintf(stderr, "Invalid argument argv[2].\n");
+		return EXIT_FAILURE;
+	}
+
 	printPreorder(fp2, root);
 
 
 	FILE * fp3 = fopen(argv[3], "w");
+	if(fp3 == NULL) {
+		fprintf(stderr, "Invalid argument argv[3].\n");
+		return EXIT_FAILURE;
+	}
 	findDimensions(root);
 	printPostorder(fp3, root);
 
 	FILE * fp4 = fopen(argv[4], "w");
+	if(fp4 == NULL) {
+		fprintf(stderr, "Invalid argument argv[4].\n");
+		return EXIT_FAILURE;
+	}
 	findCoords(root);
 	printCoords(fp4, root);
 

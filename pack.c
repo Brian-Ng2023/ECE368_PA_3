@@ -200,30 +200,34 @@ void findCoords(TreeNode * Node) {
 	//    Y coordinate of the right child of an H node is zero at base
 	//
 	//Implementing this recursive pattern implies every coordinate is 
-	//built based on the child coordinates
+	//built based on the child coordinates, and the base 0,0 coordinates
+	//change depending on the location of the cut in the binary tree
 	if (Node != NULL) {	
-		
 		if(Node->cut == 72) {
-			Node->left->ycord += Node->right->height;
-			if(Node->ycord != 0) {//Update starting coords if nonzero
-				Node->left->ycord += Node->ycord;
-				Node->right->ycord += Node->ycord;
-			}
-			else if(Node->xcord != 0) {
-				Node->right->xcord += Node->xcord;
-				Node->left->xcord += Node->xcord;
-			}
+			Node->left->ycord += Node->ycord;
+			
+			//Changing y coordinate
+			Node->left->ycord += Node->height;
+			Node->left->ycord -= Node->left->height;
+
+			Node->right->ycord += Node->ycord;
+
+			//Update base x accordingly
+			Node->left->xcord += Node->xcord;
+			Node->right->xcord += Node->xcord;
 		}
 		else if (Node->cut == 86) {
-			Node->right->xcord += Node->left->width;
-			if(Node->xcord != 0) {
-				Node->right->xcord += Node->xcord;
-				Node->left->xcord += Node->xcord;
-			}
-			else if(Node->ycord != 0) {
-				Node->left->ycord += Node->ycord;
-				Node->right->ycord += Node->ycord;
-			}
+			Node->right->xcord += Node->xcord;
+			
+			//Changing x coordinate
+			Node->right->xcord += Node->width;
+			Node->right->xcord -= Node->right->width;
+			
+			Node->left->xcord += Node->xcord;
+
+			//Update base y accordingly
+			Node->right->ycord += Node->ycord;
+			Node->left->ycord += Node->ycord;
 		}
 		
 		findCoords(Node->left);
